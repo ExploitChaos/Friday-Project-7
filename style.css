@@ -52,8 +52,9 @@
     --text-secondary: #f0f0f0;
     --accent-primary: #ff00ff; /* Neon Magenta */
     --accent-secondary: #c000c0;
+    --accent-tertiary: #00fffb; /* Neon Cyan */
     --shadow-color: rgba(255, 0, 255, 0.3);
-    --border-color: #ff00ff;
+    --border-color: var(--accent-primary);
     --header-bg: #0a0a0a;
     --header-shadow: rgba(255, 0, 255, 0.2);
     --hero-bg: transparent;
@@ -342,7 +343,7 @@ footer {
     }
 }
 
-/* --- CYBERPUNK RAVE THEME --- */
+/* --- CYBERPUNK "LIGHT SHOW" THEME --- */
 
 /* 1. Cinematic Background Effects */
 [data-theme="rave"] body {
@@ -365,7 +366,7 @@ footer {
     box-shadow: inset 0 0 15vw rgba(0, 0, 0, 0.8);
 }
 
-/* Scanlines */
+/* Scanlines (with flicker) */
 [data-theme="rave"] body::before {
     content: '';
     position: fixed;
@@ -377,12 +378,21 @@ footer {
     pointer-events: none;
     background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.03));
     background-size: 100% 3px, 4px 100%;
-    animation: scanlines 0.2s linear infinite;
+    animation: scanlines 0.2s linear infinite, scan-flicker 7s linear infinite;
 }
 
 @keyframes scanlines {
     0% { background-position: 0 0; }
     100% { background-position: 0 3px; }
+}
+
+@keyframes scan-flicker {
+    0%   { opacity: 0.7; }
+    48%  { opacity: 0.7; }
+    49%  { opacity: 0.3; }
+    50%  { opacity: 0.8; }
+    51%  { opacity: 0.7; }
+    100% { opacity: 0.7; }
 }
 
 @keyframes rave-bg {
@@ -391,24 +401,51 @@ footer {
     100% { background-position: 0% 50%; }
 }
 
-/* 2. Cyberpunk Card Styles */
+/* Header Light Chase */
+[data-theme="rave"] header {
+    position: relative;
+    overflow: hidden;
+}
+[data-theme="rave"] header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--accent-tertiary), var(--accent-primary), transparent);
+    animation: header-chase 2.5s linear infinite;
+}
+
+@keyframes header-chase {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* 2. Cyberpunk Card Styles (with breathing light) */
 [data-theme="rave"] .card {
-    border: 1px solid var(--accent-primary);
     border-radius: 0; /* Sharp edges */
-    box-shadow: 0 0 15px var(--shadow-color), 0 0 25px var(--shadow-color), inset 0 0 10px rgba(255, 0, 255, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     transform: perspective(1000px); /* 3D space */
+    animation: card-breath 3s linear infinite;
 }
 
 [data-theme="rave"] .card:hover {
     transform: perspective(1000px) scale(1.02) translateZ(10px);
-    box-shadow: 0 0 30px var(--shadow-color), 0 0 50px var(--shadow-color), inset 0 0 15px rgba(255, 0, 255, 0.2);
+    box-shadow: 0 0 30px var(--accent-primary), 0 0 50px var(--accent-primary), inset 0 0 15px rgba(255, 0, 255, 0.2);
+    animation: none; /* Stop breathing on hover to show hover effect */
 }
 
-/* 3. Advanced Glitch Text */
+@keyframes card-breath {
+    0%   { border-color: var(--accent-primary); box-shadow: 0 0 15px var(--accent-primary), inset 0 0 10px rgba(255, 0, 255, 0.1); }
+    50%  { border-color: var(--accent-tertiary); box-shadow: 0 0 25px var(--accent-tertiary), inset 0 0 15px rgba(0, 255, 251, 0.2); }
+    100% { border-color: var(--accent-primary); box-shadow: 0 0 15px var(--accent-primary), inset 0 0 10px rgba(255, 0, 255, 0.1); }
+}
+
+
+/* 3. Advanced Glitch Text (with color cycle) */
 [data-theme="rave"] h1,
 [data-theme="rave"] h2 {
-    text-shadow: 0 0 3px #fff, 0 0 8px var(--accent-primary), 0 0 12px var(--accent-primary);
     position: relative;
     animation: glitch-wave 2s linear infinite;
 }
@@ -417,14 +454,13 @@ footer {
 [data-theme="rave"] h1::after,
 [data-tHeme="rave"] h2::before,
 [data-theme="rave"] h2::after {
-    content: attr(data-text); /* Will be set by JS, but good to have */
-    content: ''; /* Fallback if we don't use JS */
+    content: ''; 
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--bg-secondary); /* Hides text behind */
+    background: var(--bg-secondary);
     overflow: hidden;
 }
 
@@ -437,7 +473,7 @@ footer {
     left: 0;
     width: 100%;
     clip-path: polygon(0% 0%, 100% 0%, 100% 45%, 0% 45%);
-    text-shadow: -2px 0 #00fffb, 2px 0 #ff00ff;
+    text-shadow: -2px 0 var(--accent-tertiary), 2px 0 var(--accent-primary);
     animation: glitch-anim-1 1.5s infinite linear alternate-reverse;
 }
 
@@ -450,7 +486,7 @@ footer {
     left: 0;
     width: 100%;
     clip-path: polygon(0% 50%, 100% 50%, 100% 100%, 0% 100%);
-    text-shadow: -2px 0 #00fffb, 2px 0 #ff00ff;
+    text-shadow: -2px 0 var(--accent-tertiary), 2px 0 var(--accent-primary);
     animation: glitch-anim-2 1s infinite linear alternate-reverse;
 }
 
@@ -463,16 +499,21 @@ footer {
     100% { transform: translate(2px, -2px); }
 }
 @keyframes glitch-wave {
-    0% { text-shadow: 0 0 5px var(--accent-primary); }
-    50% { text-shadow: 0 0 15px var(--accent-primary), 0 0 5px #fff; }
-    100% { text-shadow: 0 0 5px var(--accent-primary); }
+    0%   { text-shadow: 0 0 5px var(--accent-primary), 0 0 3px #fff; }
+    25%  { text-shadow: 0 0 10px var(--accent-tertiary), 0 0 5px #fff; }
+    50%  { text-shadow: 0 0 15px var(--accent-primary), 0 0 8px #fff; }
+    75%  { text-shadow: 0 0 10px var(--accent-tertiary), 0 0 5px #fff; }
+    100% { text-shadow: 0 0 5px var(--accent-primary), 0 0 3px #fff; }
 }
 
-/* 4. Other Cyber Styles */
+/* 4. Other Cyber Styles (with light show) */
 [data-theme="rave"] .logo {
     color: var(--text-primary);
-    text-shadow: 0 0 8px var(--text-primary);
-    animation: glitch-anim-1 3s linear infinite alternate;
+    animation: glitch-anim-1 3s linear infinite alternate, logo-glow 1.5s ease-in-out infinite alternate;
+}
+@keyframes logo-glow {
+    from { text-shadow: 0 0 8px var(--text-primary), 0 0 5px var(--text-primary); }
+    to { text-shadow: 0 0 15px var(--accent-tertiary), 0 0 10px var(--accent-tertiary); }
 }
 
 [data-theme="rave"] .btn {
@@ -486,7 +527,7 @@ footer {
 [data-theme="rave"] .btn:hover {
     background-color: transparent;
     color: var(--accent-primary);
-    box-shadow: 0 0 20px var(--accent-primary), 0 0 30px var(--accent-primary);
+    box-shadow: 0 0 20px var(--accent-primary), 0 0 30px var(--accent-primary), 0 0 40px var(--accent-tertiary);
 }
 
 [data-theme="rave"] .theme-btn {
@@ -496,7 +537,7 @@ footer {
     background-color: var(--accent-primary);
     color: #000;
     border-color: var(--accent-primary);
-    box-shadow: 0 0 10px var(--accent-primary);
+    box-shadow: 0 0 10px var(--accent-primary), 0 0 20px var(--accent-primary);
 }
 
 [data-theme="rave"] .hero-img {
@@ -513,17 +554,24 @@ footer {
         #0f000f 10px,
         #0f000f 20px
     );
+    background-size: 56px 56px; /* Define size for animation */
     border-bottom: 2px solid var(--accent-primary);
+    animation: hero-grid 5s linear infinite;
+}
+@keyframes hero-grid {
+    0% { background-position: 0 0; }
+    100% { background-position: 56px 0; }
 }
 
 [data-theme="rave"] .form-group input,
 [data-theme="rave"] .form-group textarea {
     border-radius: 0;
-    border: 1px solid var(--accent-primary);
+    border: 1px solid var(--border-color);
+    animation: card-breath 3s linear infinite; /* Match card border */
 }
 [data-theme="rave"] .form-group input:focus,
 [data-theme="rave"] .form-group textarea:focus {
     outline: none;
-    box-shadow: 0 0 10px var(--accent-primary);
+    box-shadow: 0 0 10px var(--accent-tertiary);
+    animation: none; /* Stop animation on focus */
 }
-
